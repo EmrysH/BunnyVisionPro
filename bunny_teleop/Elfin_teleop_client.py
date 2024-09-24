@@ -38,22 +38,21 @@ class TeleopClient:
         self._thread.daemon = True
         self._thread.start()
 
-        # Multi-thread variable
+        # Multi-thread variablek.
         self._lock = threading.Lock()
         self._shared_most_recent_teleop_cmd = (
             np.zeros(cmd_dims[0]),
-            np.zeros(cmd_dims[1]),
+
         )
-        self._shared_most_recent_ee_pose = (np.zeros(7), np.zeros(7))
+        self._shared_most_recent_ee_pose = (np.zeros(7), )
         self._shared_server_started = False
 
     def send_init_config(
             self,
             *,
-            # robot_base_pose: Tuple[np.ndarray, np.ndarray],
-            robot_base_pose: np.ndarray,
-            init_qpos: np.ndarray,
-            joint_names: List[str],
+            robot_base_pose: Tuple[np.ndarray,],
+            init_qpos: Tuple[np.ndarray,],
+            joint_names: Tuple[List[str],],
             align_gravity_dir=True,
             bimanual_alignment_mode=BimanualAlignmentMode.ALIGN_CENTER,
     ):
@@ -80,7 +79,7 @@ class TeleopClient:
             print(f"Teleop Client: Teleop Server start, begin teleoperation now.")
             with self._lock:
                 self._shared_server_started = True
-                for i in range(2):
+                for i in range(1):
                     self._shared_most_recent_teleop_cmd[i][:] = target_qpos[i][:]
                     self._shared_most_recent_ee_pose[i][:] = ee_pose[i][:]
         else:
@@ -91,7 +90,7 @@ class TeleopClient:
                     f"Teleop client: Invalid command: qpos dim: {target_qpos.shape}, cmd dim: {self.cmd_dim}"
                 )
             with self._lock:
-                for i in range(2):
+                for i in range(1):
                     self._shared_most_recent_teleop_cmd[i][:] = target_qpos[i][:]
                     self._shared_most_recent_ee_pose[i][:] = ee_pose[i][:]
 
