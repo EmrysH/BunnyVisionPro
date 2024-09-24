@@ -8,7 +8,7 @@ import zmq
 from tornado import ioloop
 from zmq.eventloop import zmqstream
 
-from bunny_teleop.init_config import (
+from bunny_teleop.Elfin_init_config import (
     InitializationConfig,
     BimanualAlignmentMode,
 )
@@ -38,7 +38,7 @@ class TeleopClient:
         self._thread.daemon = True
         self._thread.start()
 
-        # Multi-thread variablek.
+        # Multi-thread variable
         self._lock = threading.Lock()
         self._shared_most_recent_teleop_cmd = (
             np.zeros(cmd_dims[0]),
@@ -50,9 +50,10 @@ class TeleopClient:
     def send_init_config(
             self,
             *,
-            robot_base_pose: Tuple[np.ndarray, np.ndarray],
-            init_qpos: Tuple[np.ndarray, np.ndarray],
-            joint_names: Tuple[List[str], List[str]],
+            # robot_base_pose: Tuple[np.ndarray, np.ndarray],
+            robot_base_pose: np.ndarray,
+            init_qpos: np.ndarray,
+            joint_names: List[str],
             align_gravity_dir=True,
             bimanual_alignment_mode=BimanualAlignmentMode.ALIGN_CENTER,
     ):
