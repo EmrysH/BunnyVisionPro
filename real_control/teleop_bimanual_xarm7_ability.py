@@ -96,9 +96,19 @@ def main():
     robots = [left_robot, right_robot]
     joint_names = tuple(robot.actuated_joint_names for robot in robots)
 
+
     # Initial joint positions of the robots
+    # init_qpos = [-0.03141593, 0.13439035, 0.03141593, 0.23911011, 3.14159265, 1.46433124, -0.00349066] + [0] * 10
+    # init_qpos = np.array(init_qpos)
+    # left_init_qpos = init_qpos
+    # right_init_qpos = init_qpos
+
+
     left_init_qpos = np.concatenate([np.array([-26, -14.4, 1.8, 13.2, 180, 52.9, -30.5]) / 180 * np.pi, np.zeros(10)])
     right_init_qpos = np.concatenate([np.array([48.1, 5.2, 1.9, 13.1, 174.6, 91.4, 46.8]) / 180 * np.pi, np.zeros(10)])
+  
+
+
 
     bimanual_init_qpos = (left_init_qpos, right_init_qpos)
 
@@ -163,7 +173,7 @@ def main():
             left_robot.start()
             right_robot.start()
 
-            print("============== Initializing robot arm...")
+            print("============== Initializing robot al;rm...")
             while np.linalg.norm(left_error) > error_threshold or np.linalg.norm(right_error) > error_threshold:
                 # print(np.linalg.norm(left_error), np.linalg.norm(right_error), error_threshold)
                 left_robot.wait_until_next_control_signal()

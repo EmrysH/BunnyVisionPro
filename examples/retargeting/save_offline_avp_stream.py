@@ -13,6 +13,7 @@ def main(avp_ip: str):
         avp_ip: the ip_address of your Apple VisionPro inside a local network.
     """
     s = VisionProStreamer(avp_ip, True)
+    # s = VisionProStreamer("175.159.194.162", True)
 
     time.sleep(30)
     print(len(s.recording))

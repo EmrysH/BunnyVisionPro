@@ -80,6 +80,8 @@ def retarget_video(
     left_retargeting: SeqRetargeting,
     right_retargeting: SeqRetargeting,
     data_path: str,
+    output_path: str,
+    config_paths: List[str],
 ):
     data = np.load(data_path, allow_pickle=True)
     data = filter_data(data, fps=30, duration=15)
@@ -121,10 +123,35 @@ def retarget_video(
 
             pbar.update(1)
 
+        meta_data = dict(
+            config_paths=config_paths,
+            dofs=[
+                len(left_retargeting.optimizer.robot.dof_joint_names),
+                len(right_retargeting.optimizer.robot.dof_joint_names),
+            ],
+            joint_names=[
+                left_retargeting.optimizer.robot.dof_joint_names,
+                right_retargeting.optimizer.robot.dof_joint_names,
+            ],
+        )
+
+        result = {
+            "left_qpos": np.stack(left_qpos_list),
+            "right_qpos": np.stack(right_qpos_list),
+            "left_pose": np.stack(left_pose_list),
+            "right_pose": np.stack(right_pose_list),
+        }
+
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("wb") as f:
+            pickle.dump(dict(data=result, meta_data=meta_data), f)
+
 
 def main(
-    robot_name: RobotName = "ability",
-    data_path: str = "data/test_stream.pkl",
+    robot_name: RobotName,
+    data_path: str,
+    output_path: str,
 ):
     """
     Detects the human hand pose from a video and translates the human pose trajectory into a robot pose trajectory.
@@ -132,13 +159,10 @@ def main(
     Args:
         robot_name: The identifier for the robot. This should match one of the default supported robots.
         data_path: The file path for the input offline dump from Apple VisionPro in .pkl format.
+        output_path: The file path for the output data in .mp4 format.
     """
 
     robot_dir = Path(__file__).absolute().parent / "dex-urdf" / "robots" / "hands"
-
-    print(robot_dir)
-
-
     RetargetingConfig.set_default_urdf_dir(str(robot_dir))
     left_config_path = get_default_config_path(robot_name, RetargetingType.dexpilot, HandType.left)
     right_config_path = get_default_config_path(robot_name, RetargetingType.dexpilot, HandType.right)
@@ -148,6 +172,8 @@ def main(
         left_retargeting,
         right_retargeting,
         data_path,
+        output_path,
+        [str(left_config_path), str(right_config_path)],
     )
 
 

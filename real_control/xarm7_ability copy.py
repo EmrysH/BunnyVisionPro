@@ -124,16 +124,16 @@ class XArm7Ability:
         ee_frame_name = "ee_link"
         self.ee_frame_id = self.frame_id_mapping[ee_frame_name]
 
-    def compute_ee_pose(self, qpos) -> pin:
+    def compute_ee_pose(self, qpos) -> pin.SE3:
         if qpos.shape[0] == 7:
             qpos = np.concatenate([qpos, np.zeros(10)])
         pin.forwardKinematics(self.pin_model, self.pin_data, np.array(qpos))
-        ee_pose: pin = pin.updateFramePlacement(
+        ee_pose: pin.SE3 = pin.updateFramePlacement(
             self.pin_model, self.pin_data, self.ee_frame_id
         )
         return ee_pose
 
-    def compute_ik(self, ee_pose: pin, init_qpos):
+    def compute_ik(self, ee_pose: pin.SE3, init_qpos):
         oMdes = ee_pose
         qpos = init_qpos
 
@@ -275,7 +275,7 @@ class XArm7Ability:
     # Test Function
     def generate_circle_motion(self, radius, init_qpos, steps):
         pin.forwardKinematics(self.pin_model, self.pin_data, np.array(init_qpos))
-        ee_pose: pin = pin.updateFramePlacement(
+        ee_pose: pin.SE3 = pin.updateFramePlacement(
             self.pin_model, self.pin_data, self.ee_frame_id
         )
 
@@ -285,7 +285,7 @@ class XArm7Ability:
         ee_pos_list = []
         for i in np.arange(-np.pi / 2, np.pi / 2 * 3, 2 * np.pi / steps):
             ee_pos = np.array([0, np.cos(i), np.sin(i)]) * radius + center_pos
-            new_ee_pose: pin = ee_pose.copy()
+            new_ee_pose: pin.SE3 = ee_pose.copy()
             new_ee_pose.translation = ee_pos
             new_qpos = self.compute_ik(new_ee_pose, last_qpos)
             last_qpos = new_qpos

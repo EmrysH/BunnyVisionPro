@@ -8,7 +8,7 @@ import zmq
 from tornado import ioloop
 from zmq.eventloop import zmqstream
 
-from bunny_teleop.init_config import (
+from .init_config import (
     InitializationConfig,
     BimanualAlignmentMode,
 )
